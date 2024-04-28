@@ -9,5 +9,3 @@ import HeaderComponent from '@/components/layout/HeaderComponent.vue'
     <main><RouterView /></main>
   </div>
 </template>
-
-<style scoped lang="scss"></style>

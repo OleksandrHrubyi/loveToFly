@@ -28,7 +28,6 @@ function handleValueCheckBox(id) {
   if (!userFilter.value.length) {
     userFilter.value.push(idAllcheckbox)
   }
-  console.log(userFilter.value, 'value')
 }
 </script>
 
@@ -107,6 +106,7 @@ function handleValueCheckBox(id) {
   transition: all var(--transition-style);
   padding: 10px 20px;
   cursor: pointer;
+
   @media screen and (max-width: $max-mobile-width) {
     padding: 8px;
   }

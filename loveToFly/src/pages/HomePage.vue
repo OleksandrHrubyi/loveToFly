@@ -6,20 +6,20 @@ import FilterTickets from '@/components/FilterTickets.vue'
 import CardComponent from '@/components/CardComponent.vue'
 import PreloaderComponent from '@/components/PreloaderComponent.vue'
 
+const userStore = useTicketsStore()
 const countList = 5
 const checkboxIdAll = ref(5)
 let stateFilter = ref(0)
 let limitCard = ref(5)
-
-const userStore = useTicketsStore()
+let fetchStatus = ref(true)
 
 onMounted(async () => {
   await userStore.getIdSearch()
   await userStore.getListTickets()
+  fetchStatus.value = false
 })
 
 const filteredTicker = computed(() => {
-  console.log(filterByTopNav.value, 'test43')
   return filterByTopNav.value.slice(0, limitCard.value)
 })
 
@@ -71,12 +71,18 @@ const filterByTopNav = computed(() => {
   }
 })
 
+const hiddenBtn = computed(() => {
+  return (
+    filteredTicker.value && filteredTicker.value.length && filterByTopNav.value.length > countList
+  )
+})
+
 const disabledBtn = computed(() => {
   return limitCard.value >= userStore.ticketsList.length
 })
 
 function handlebtnFilter(id) {
-  limitCard.value = 5
+  limitCard.value = countList
   if (stateFilter.value === id) {
     stateFilter.value = 0
     return
@@ -110,7 +116,6 @@ function showMoreCard() {
             </button>
           </li>
         </ul>
-
         <ul class="main-list-card" v-if="filteredTicker && filteredTicker.length">
           <li class="main-card-item" v-for="card in filteredTicker" :key="card.keyId">
             <CardComponent
@@ -129,8 +134,18 @@ function showMoreCard() {
             />
           </li>
         </ul>
-        <div v-else><PreloaderComponent /></div>
-        <div v-if="filteredTicker && filteredTicker.length">
+        <div class="preload-wrapper" v-else>
+          <ul class="main-list-card" v-if="userStore.finishDispatch">
+            <li class="main-card-item relative-main-card" v-for="item in countList" :key="item">
+              <div class="disabled-main-card">
+                <CardComponent :ticketPrice="10000" />
+              </div>
+              <div class="preload-component"><PreloaderComponent /></div>
+            </li>
+          </ul>
+          <div v-else class="no-ticket-data">Квитків не знайдено :(</div>
+        </div>
+        <div v-if="hiddenBtn">
           <button @click="showMoreCard" class="show-more-btn" :disabled="disabledBtn">
             <template v-if="!disabledBtn">Завантажити ще 5 квитків</template>
             <template v-else>Всі квитки завантажено</template>
@@ -211,11 +226,13 @@ function showMoreCard() {
 
 .list-btn-item {
   width: calc(100% / 3);
+
   &:first-child {
     .btn-filter {
       border-left: 1px solid var(--bi-color-border-2);
       border-radius: 6px 0 0px 6px;
     }
+
     .active-btn-filter {
       border-left: 1px solid var(--bi-color-brand);
     }
@@ -278,5 +295,29 @@ function showMoreCard() {
   &:last-child {
     margin-bottom: 0;
   }
+}
+
+.disabled-main-card {
+  filter: blur(7px);
+}
+
+.relative-main-card {
+  position: relative;
+}
+
+.preload-component {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.no-ticket-data {
+  padding: 20px;
+  background-color: var(--bi-color-background);
+  filter: drop-shadow(var(--box-shadow-style));
+  box-shadow: var(--box-shadow-style);
+  border-radius: 4px;
 }
 </style>

@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 
 const emit = defineEmits(['checkboxChange'])
+const id = ref(null)
 
 const props = defineProps({
   checkboxState: {
@@ -14,8 +15,6 @@ const props = defineProps({
     default: 1
   }
 })
-
-const id = ref(null)
 
 onMounted(() => {
   id.value = `checkbox-${Date.now() + Math.random()}`
@@ -80,6 +79,7 @@ const checkboxValue = computed({
   border: 1px solid var(--bi-color-border);
   border-radius: 2px;
   user-select: none;
+
   &,
   &::before,
   .checkbox-img {

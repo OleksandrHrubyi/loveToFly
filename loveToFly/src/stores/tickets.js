@@ -4,9 +4,10 @@ import { v4 as uuidv4 } from 'uuid'
 
 export const useTicketsStore = defineStore('ticketsStore', () => {
   const ticketsList = ref([])
-  let idSearch = ref(null)
-  let dispatchStatus = ref(false)
-  let userFilter = ref([5])
+  const idSearch = ref(null)
+  const dispatchStatus = ref(false)
+  const userFilter = ref([5])
+  const finishDispatch = ref(true)
 
   async function getIdSearch() {
     try {
@@ -18,16 +19,18 @@ export const useTicketsStore = defineStore('ticketsStore', () => {
       if (data && data.searchId) {
         idSearch.value = data.searchId
       } else {
-        console.error('getIdSearch: No searchId found in the response')
+        console.log('getIdSearch: No searchId found in the response')
       }
     } catch (error) {
-      console.error('error getIdSearch', error.errorMessage)
+      console.log('error getIdSearch', error.errorMessage)
     }
   }
 
   async function getListTickets() {
     try {
+      finishDispatch.value = true
       dispatchStatus.value = true
+
       const response = await fetch(
         `https://avs-backend.vercel.app/tickets?searchId=${idSearch.value}`
       )
@@ -51,11 +54,11 @@ export const useTicketsStore = defineStore('ticketsStore', () => {
         ticketsList.value = [...ticketsList.value, ...newTickets]
       }
       if (data && data.stop) {
+        finishDispatch.value = false
         return
       }
       getListTickets()
     } catch (error) {
-      console.error('error getListTickets', error)
       setTimeout(() => {
         getListTickets()
       }, 2000)
@@ -64,5 +67,13 @@ export const useTicketsStore = defineStore('ticketsStore', () => {
     }
   }
 
-  return { idSearch, ticketsList, getIdSearch, getListTickets, dispatchStatus, userFilter }
+  return {
+    idSearch,
+    ticketsList,
+    getIdSearch,
+    getListTickets,
+    dispatchStatus,
+    userFilter,
+    finishDispatch
+  }
 })

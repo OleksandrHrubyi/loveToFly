@@ -1,6 +1,7 @@
 <script setup>
-import { computed, onMounted, toRefs } from 'vue'
+import { computed, toRefs } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
+import defaultLogo from '@/assets/img/fake-comp-logo.png'
 
 const props = defineProps({
   ticketPrice: {
@@ -68,10 +69,6 @@ const {
   departureStops
 } = toRefs(props)
 
-onMounted(() => {
-  console.log('hi')
-})
-
 const formatedPrice = computed(() => {
   if (ticketPrice.value > 0) {
     let priceStr = ticketPrice.value.toString()
@@ -84,10 +81,19 @@ const formatedPrice = computed(() => {
 })
 
 const formatedImage = computed(() => {
-  return `https://pics.avs.io/99/36/${companyName.value}.png`
+  if (companyName.value) {
+    return `https://pics.avs.io/99/36/${companyName.value}.png`
+  }
+  return defaultLogo
 })
 
 const formDateDepart = computed(() => {
+  if (!timeDeparture.value) {
+    return 'Час недоступний'
+  }
+  if (!departureDuration.value) {
+    return 'Тривалість недоступна'
+  }
   const startTime = new Date(timeDeparture.value)
   const endTime = new Date(startTime.getTime() + departureDuration.value * 60000)
   const startTimeFormatted = formatTime(startTime)
@@ -96,6 +102,12 @@ const formDateDepart = computed(() => {
 })
 
 const formDateArrive = computed(() => {
+  if (!timeArrives.value) {
+    return 'Час недоступний'
+  }
+  if (!arrivasDuration.value) {
+    return 'Тривалість недоступна'
+  }
   const startTime = new Date(timeArrives.value)
   const endTime = new Date(startTime.getTime() + arrivasDuration.value * 60000)
   const startTimeFormatted = formatTime(startTime)
@@ -170,7 +182,13 @@ const listStopDeparture = computed(() => {
 })
 
 function formatTime(date) {
-  return date.toISOString().substring(11, 16)
+  if (date) {
+    return date.toISOString().substring(11, 16)
+  }
+}
+
+function setDefaultLogo(event) {
+  event.target.src = defaultLogo
 }
 </script>
 
@@ -178,7 +196,14 @@ function formatTime(date) {
   <div class="card-container">
     <div class="card-header">
       <data class="card-price" :value="ticketPrice">{{ formatedPrice }}</data>
-      <img :src="formatedImage" class="card-image" alt="logo company" width="99" height="36" />
+      <img
+        :src="formatedImage"
+        @error="setDefaultLogo"
+        class="card-image"
+        alt="logo company"
+        width="99"
+        height="36"
+      />
     </div>
     <div class="card-body">
       <ul class="departure-list travel-list">
