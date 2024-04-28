@@ -8,6 +8,7 @@ import PreloaderComponent from '@/components/PreloaderComponent.vue'
 
 const userStore = useTicketsStore()
 const countList = 5
+const shortFilteredList = 15
 const checkboxIdAll = ref(5)
 let stateFilter = ref(0)
 let limitCard = ref(5)
@@ -61,11 +62,11 @@ const filterByOptim = computed(() => {
 
 const filterByTopNav = computed(() => {
   if (stateFilter.value === 1) {
-    return filterByPrice.value
+    return filterByPrice.value.slice(0, shortFilteredList)
   } else if (stateFilter.value === 2) {
-    return filterByDuration.value
+    return filterByDuration.value.slice(0, shortFilteredList)
   } else if (stateFilter.value === 3) {
-    return filterByOptim.value
+    return filterByOptim.value.slice(0, shortFilteredList)
   } else {
     return filteredByStops.value
   }
@@ -78,7 +79,10 @@ const hiddenBtn = computed(() => {
 })
 
 const disabledBtn = computed(() => {
-  return limitCard.value >= userStore.ticketsList.length
+  return (
+    limitCard.value >=
+    (stateFilter.value ? filterByTopNav.value.length - 1 : userStore.ticketsList.length)
+  )
 })
 
 function handlebtnFilter(id) {
@@ -195,11 +199,11 @@ function showMoreCard() {
 }
 
 .btn-filter {
-  padding: 15px;
+  padding: 14px;
   color: var(--bi-color-text);
   text-align: center;
   font-size: 12px;
-  font-family: 'Open Sans';
+  font-family: 'Open Sans', sans-serif;
   font-weight: 600;
   line-height: 1.6;
   letter-spacing: 0.5px;
@@ -211,6 +215,14 @@ function showMoreCard() {
   border-left: 1px solid transparent;
   width: 100%;
   user-select: none;
+  background-color: var(--bi-color-background);
+  transition: all var(--transition-style);
+
+  &:hover:not(.active-btn-filter),
+  &:focus:not(.active-btn-filter),
+  &:active:not(.active-btn-filter) {
+    background-color: var(--bi-color-neutral-2);
+  }
 
   @media screen and (max-width: $max-mobile-width) {
     padding: 8px 4px;
@@ -222,6 +234,12 @@ function showMoreCard() {
   width: 100%;
   display: flex;
   margin-bottom: 20px;
+  position: sticky;
+  top: 0px;
+
+  @media screen and (max-width: $max-mobile-width) {
+    top: 103px;
+  }
 }
 
 .list-btn-item {
@@ -283,6 +301,15 @@ function showMoreCard() {
   padding: 15px 20px;
   border-radius: 6px;
   user-select: none;
+  transition: all var(--transition-style);
+
+  @media screen and (min-width: $min-desktop-width) {
+    &:hover,
+    &:focus,
+    &:active {
+      background-color: var(--bi-color-dark-brand);
+    }
+  }
 
   &:disabled {
     background-color: var(--bi-color-neutral-1);

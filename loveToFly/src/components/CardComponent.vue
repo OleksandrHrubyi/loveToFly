@@ -71,11 +71,8 @@ const {
 
 const formatedPrice = computed(() => {
   if (ticketPrice.value > 0) {
-    let priceStr = ticketPrice.value.toString()
-    if (priceStr.length > 2) {
-      priceStr = priceStr.slice(0, 2) + ' ' + priceStr.slice(2)
-    }
-    return `${priceStr} ₴`
+    const formattedPrice = ticketPrice.value.toLocaleString('uk-UA')
+    return `${formattedPrice} ₴`
   }
   return '- ₴'
 })
@@ -136,27 +133,21 @@ const formatCodeArrives = computed(() => {
 })
 
 const countStopOrigin = computed(() => {
-  if (originStops.value && originStops.value.length) {
-    if (originStops.value.length > 1) {
-      return `${originStops.value.length} пересадки`
-    } else {
-      return `${originStops.value.length} пересадкa`
-    }
-  } else {
-    return 'Без Пересадок'
+  const stopsCount = originStops.value?.length || 0
+  if (stopsCount === 0) {
+    return 'Без пересадок'
   }
+  const stopWord = stopsCount === 1 ? 'пересадка' : 'пересадки'
+  return `${stopsCount} ${stopWord}`
 })
 
 const countStopDeparture = computed(() => {
-  if (departureStops.value && departureStops.value.length) {
-    if (departureStops.value.length > 1) {
-      return `${departureStops.value.length} пересадки`
-    } else {
-      return `${departureStops.value.length} пересадкa`
-    }
-  } else {
-    return 'Без Пересадок'
+  const stopsCount = departureStops.value?.length || 0
+  if (stopsCount === 0) {
+    return 'Без пересадок'
   }
+  const stopWord = stopsCount === 1 ? 'пересадка' : 'пересадки'
+  return `${stopsCount} ${stopWord}`
 })
 
 const listStopOrigin = computed(() => {
@@ -202,7 +193,7 @@ function setDefaultLogo(event) {
         class="card-image"
         alt="logo company"
         width="99"
-        height="36"
+        height="31"
       />
     </div>
     <div class="card-body">
@@ -210,7 +201,7 @@ function setDefaultLogo(event) {
         <li class="travel-item">
           <div class="item-top-data">{{ formatCodeDepurt }}</div>
           <div class="item-bottom-data">
-            <time>{{ formDateDepart }}</time>
+            {{ formDateDepart }}
           </div>
         </li>
         <li class="travel-item">
@@ -230,7 +221,7 @@ function setDefaultLogo(event) {
         <li class="travel-item">
           <div class="item-top-data">{{ formatCodeArrives }}</div>
           <div class="item-bottom-data">
-            <time>{{ formDateArrive }} </time>
+            {{ formDateArrive }}
           </div>
         </li>
         <li class="travel-item">
@@ -256,7 +247,7 @@ function setDefaultLogo(event) {
 @import '@/assets/styles/mediaWidth.scss';
 
 .card-container {
-  padding: 20px;
+  padding: 23px 20px 20px;
   background-color: var(--bi-color-background);
   filter: drop-shadow(var(--box-shadow-style));
   box-shadow: var(--box-shadow-style);
@@ -267,7 +258,7 @@ function setDefaultLogo(event) {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
+  margin-bottom: 22px;
 }
 
 .card-image {
@@ -300,6 +291,7 @@ function setDefaultLogo(event) {
   line-height: 1.5;
   letter-spacing: 0.5px;
   text-transform: uppercase;
+  font-weight: 600;
 
   @media screen and (max-width: $max-mobile-width) {
     font-size: 10px;
@@ -321,6 +313,9 @@ function setDefaultLogo(event) {
 
 .list-code-data {
   margin-right: 4px;
+  color: var(--bi-color-text);
+  font-size: 14px;
+  line-height: 1.5;
 
   &:last-child {
     margin-right: 0;

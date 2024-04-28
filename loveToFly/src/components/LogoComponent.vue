@@ -30,7 +30,7 @@ const userStore = useTicketsStore()
 
 .logo-preload {
   animation-name: logoAnimation;
-  animation-duration: 0.5s;
+  animation-duration: 0.9s;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
 

@@ -66,6 +66,8 @@ function handleValueCheckBox(id) {
   background: var(--bi-color-background);
   box-shadow: var(--box-shadow-style);
   min-width: 232px;
+  position: sticky;
+  top: 0;
 
   @media screen and (max-width: $max-mobile-width) {
     width: 100%;
