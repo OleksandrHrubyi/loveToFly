@@ -37,6 +37,7 @@ function handleValueCheckBox(id) {
             />
           </div>
           <div class="filter-name">{{ item.name }}</div>
+          <div class="filter-short-name">{{ item.short_name }}</div>
         </div>
       </li>
     </ul>
@@ -44,12 +45,27 @@ function handleValueCheckBox(id) {
 </template>
 
 <style scoped lang="scss">
+@import '@/assets/styles/mediaWidth.scss';
+
 .filter-container {
   padding: 20px 0 10px;
   border-radius: 5px;
   background: var(--bi-color-background);
   box-shadow: var(--box-shadow-style);
   min-width: 232px;
+
+  @media screen and (max-width: $max-mobile-width) {
+    width: 100%;
+  }
+}
+
+.filter-list {
+  @media screen and (max-width: $max-mobile-width) {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 8px;
+  }
 }
 
 .filter-title {
@@ -77,9 +93,15 @@ function handleValueCheckBox(id) {
   transition: all var(--transition-style);
   padding: 10px 20px;
 
-  &:hover {
-    cursor: pointer;
-    background-color: var(--bi-color-neutral-2);
+  @media screen and (max-width: $max-mobile-width) {
+    padding: 8px;
+  }
+
+  @media screen and (min-width: $min-desktop-width) {
+    &:hover {
+      cursor: pointer;
+      background-color: var(--bi-color-neutral-2);
+    }
   }
 }
 
@@ -89,5 +111,21 @@ function handleValueCheckBox(id) {
   font-weight: 400;
   line-height: 1.53;
   user-select: none;
+
+  @media screen and (max-width: $max-mobile-width) {
+    display: none;
+  }
+}
+
+.filter-short-name {
+  color: var(--bi-color-text);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.53;
+  user-select: none;
+
+  @media screen and (min-width: $min-tablet-width) {
+    display: none;
+  }
 }
 </style>

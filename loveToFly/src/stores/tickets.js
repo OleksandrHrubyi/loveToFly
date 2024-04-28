@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid'
 export const useTickerStore = defineStore('tickerStore', () => {
   const ticketsList = ref([])
   let idSearch = ref(null)
+  let dispatchStatus = ref(false)
 
   async function getIdSearch() {
     try {
@@ -25,6 +26,7 @@ export const useTickerStore = defineStore('tickerStore', () => {
 
   async function getListTickets() {
     try {
+      dispatchStatus.value = true
       const response = await fetch(
         `https://avs-backend.vercel.app/tickets?searchId=${idSearch.value}`
       )
@@ -33,15 +35,25 @@ export const useTickerStore = defineStore('tickerStore', () => {
       }
       const data = await response.json()
       if (data && data.tickets) {
-        ticketsList.value = data.tickets.map((el) => {
+        const newTickets = data.tickets.map((el) => {
           el.keyId = uuidv4()
           return el
         })
+        ticketsList.value = [...ticketsList.value, ...newTickets]
       }
+      if (data && data.stop) {
+        return
+      }
+      getListTickets()
     } catch (error) {
       console.error('error getListTickets', error.errorMessage)
+      setTimeout(() => {
+        getListTickets()
+      }, 2000)
+    } finally {
+      dispatchStatus.value = false
     }
   }
 
-  return { idSearch, ticketsList, getIdSearch, getListTickets }
+  return { idSearch, ticketsList, getIdSearch, getListTickets, dispatchStatus }
 })

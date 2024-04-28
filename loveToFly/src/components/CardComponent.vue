@@ -178,7 +178,7 @@ function formatTime(date) {
   <div class="card-container">
     <div class="card-header">
       <data class="card-price" :value="ticketPrice">{{ formatedPrice }}</data>
-      <img :src="formatedImage" class="card-image" alt="logo company" />
+      <img :src="formatedImage" class="card-image" alt="logo company" width="99" height="36" />
     </div>
     <div class="card-body">
       <ul class="departure-list travel-list">
@@ -228,6 +228,8 @@ function formatTime(date) {
 </template>
 
 <style scoped lang="scss">
+@import '@/assets/styles/mediaWidth.scss';
+
 .card-container {
   padding: 20px;
   background-color: var(--bi-color-background);
@@ -273,6 +275,10 @@ function formatTime(date) {
   line-height: 1.5;
   letter-spacing: 0.5px;
   text-transform: uppercase;
+
+  @media screen and (max-width: $max-mobile-width) {
+    font-size: 10px;
+  }
 }
 
 .item-bottom-data {
@@ -282,6 +288,10 @@ function formatTime(date) {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
+
+  @media screen and (max-width: $max-mobile-width) {
+    font-size: 10px;
+  }
 }
 
 .list-code-data {

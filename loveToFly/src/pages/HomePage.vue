@@ -2,12 +2,13 @@
 import { ref } from 'vue'
 import { onMounted, computed } from 'vue'
 import { useTickerStore } from '@/stores/tickets'
+import { filters } from '@/constants/filtersData'
 import FilterTickets from '@/components/FilterTickets.vue'
 import CardComponent from '@/components/CardComponent.vue'
-import { filters } from '@/constants/filtersData'
+import PreloaderComponent from '@/components/PreloaderComponent.vue'
 
 const countList = 5
-let stateFilter = ref(1)
+let stateFilter = ref(0)
 let limitCard = ref(5)
 
 const userStore = useTickerStore()
@@ -15,20 +16,37 @@ const userStore = useTickerStore()
 onMounted(async () => {
   await userStore.getIdSearch()
   await userStore.getListTickets()
-  console.log(userStore.ticketsList)
 })
 
 const filteredTicker = computed(() => {
+  if (stateFilter.value === 1) {
+    const lowestPrice = userStore.ticketsList.reduce(
+      (acc, currentValue) => (currentValue.price < acc ? currentValue.price : currentValue),
+      userStore.ticketsList[0].price
+    )
+    console.log(lowestPrice, 'lowestPrice')
+  }
+  console.log(userStore.ticketsList.length, 'leng')
   return userStore.ticketsList.slice(0, limitCard.value)
 })
 
+const disabledBtn = computed(() => {
+  return limitCard.value >= userStore.ticketsList.length
+})
+
 function handlebtnFilter(id) {
+  console.log(id, 'id')
+  if (stateFilter.value === id) {
+    stateFilter.value = 0
+    return
+  }
   stateFilter.value = id
 }
 
 function showMoreCard() {
-  console.log('hi')
   limitCard.value += countList
+  console.log(limitCard.value)
+  console.log(disabledBtn.value, 'disabledBtn')
 }
 </script>
 
@@ -36,7 +54,7 @@ function showMoreCard() {
   <section class="main-section" aria-label="Основний контент">
     <h1 class="visually-hidden">Авіа білети</h1>
     <div class="container flex-container">
-      <div><FilterTickets /></div>
+      <FilterTickets />
       <div class="main-list-container">
         <ul class="list-btn-filter">
           <li v-for="item in filters" :key="item.id" class="list-btn-item">
@@ -45,7 +63,7 @@ function showMoreCard() {
               class="btn-filter"
               :class="[
                 { 'active-btn-filter': stateFilter === item.id },
-                { 'left-border': stateFilter === 1 && item.id === 3 },
+                { 'left-border': !stateFilter || (stateFilter === 1 && item.id === 3) },
                 { 'right-border': stateFilter === 3 && item.id === 1 }
               ]"
             >
@@ -54,7 +72,7 @@ function showMoreCard() {
           </li>
         </ul>
 
-        <ul class="main-list-card">
+        <ul class="main-list-card" v-if="filteredTicker && filteredTicker.length">
           <li class="main-card-item" v-for="card in filteredTicker" :key="card.keyId">
             <CardComponent
               :ticketPrice="card.price"
@@ -72,8 +90,12 @@ function showMoreCard() {
             />
           </li>
         </ul>
-        <div>
-          <button @click="showMoreCard" class="show-more-btn">Завантажити ще 5 квитків</button>
+        <div v-else><PreloaderComponent /></div>
+        <div v-if="filteredTicker && filteredTicker.length">
+          <button @click="showMoreCard" class="show-more-btn" :disabled="disabledBtn">
+            <template v-if="!disabledBtn">Завантажити ще 5 квитків</template>
+            <template v-else>Всі квитки завантажено</template>
+          </button>
         </div>
       </div>
     </div>
@@ -81,6 +103,8 @@ function showMoreCard() {
 </template>
 
 <style scoped lang="scss">
+@import '@/assets/styles/mediaWidth.scss';
+
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -106,6 +130,10 @@ function showMoreCard() {
   display: flex;
   align-items: flex-start;
   gap: 20px;
+
+  @media screen and (max-width: $max-mobile-width) {
+    flex-direction: column;
+  }
 }
 
 .main-list-container {
@@ -129,6 +157,11 @@ function showMoreCard() {
   border-left: 1px solid transparent;
   width: 100%;
   user-select: none;
+
+  @media screen and (max-width: $max-mobile-width) {
+    padding: 8px 4px;
+    font-size: 10px;
+  }
 }
 
 .list-btn-filter {
@@ -194,6 +227,11 @@ function showMoreCard() {
   padding: 15px 20px;
   border-radius: 6px;
   user-select: none;
+
+  &:disabled {
+    background-color: var(--bi-color-neutral-1);
+    pointer-events: none;
+  }
 }
 .main-card-item {
   margin-bottom: 20px;
