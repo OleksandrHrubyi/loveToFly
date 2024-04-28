@@ -1,6 +1,6 @@
 <script setup>
-import { useTickerStore } from '@/stores/tickets'
-const userStore = useTickerStore()
+import { useTicketsStore } from '@/stores/tickets'
+const userStore = useTicketsStore()
 </script>
 
 <template>
@@ -29,12 +29,12 @@ const userStore = useTickerStore()
 }
 
 .logo-preload {
-  animation-name: listMainAnimMain;
+  animation-name: logoAnimation;
   animation-duration: 0.5s;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
 
-  @keyframes listMainAnimMain {
+  @keyframes logoAnimation {
     0% {
       transform: rotate(0deg);
     }

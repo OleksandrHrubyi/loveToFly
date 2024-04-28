@@ -1,17 +1,17 @@
 <script setup>
-import { ref } from 'vue'
-import { onMounted, computed } from 'vue'
-import { useTickerStore } from '@/stores/tickets'
+import { ref, onMounted, computed } from 'vue'
+import { useTicketsStore } from '@/stores/tickets'
 import { filters } from '@/constants/filtersData'
 import FilterTickets from '@/components/FilterTickets.vue'
 import CardComponent from '@/components/CardComponent.vue'
 import PreloaderComponent from '@/components/PreloaderComponent.vue'
 
 const countList = 5
+const checkboxIdAll = ref(5)
 let stateFilter = ref(0)
 let limitCard = ref(5)
 
-const userStore = useTickerStore()
+const userStore = useTicketsStore()
 
 onMounted(async () => {
   await userStore.getIdSearch()
@@ -19,15 +19,56 @@ onMounted(async () => {
 })
 
 const filteredTicker = computed(() => {
-  if (stateFilter.value === 1) {
-    const lowestPrice = userStore.ticketsList.reduce(
-      (acc, currentValue) => (currentValue.price < acc ? currentValue.price : currentValue),
-      userStore.ticketsList[0].price
-    )
-    console.log(lowestPrice, 'lowestPrice')
+  console.log(filterByTopNav.value, 'test43')
+  return filterByTopNav.value.slice(0, limitCard.value)
+})
+
+const filteredSameStops = computed(() => {
+  if (isAciveAllFilter.value) {
+    return userStore.ticketsList
+  } else {
+    return userStore.ticketsList.filter((el) => el.originStops === el.departureStops)
   }
-  console.log(userStore.ticketsList.length, 'leng')
-  return userStore.ticketsList.slice(0, limitCard.value)
+})
+
+const filteredByStops = computed(() => {
+  if (isAciveAllFilter.value) {
+    return userStore.ticketsList
+  }
+  return filteredSameStops.value.filter((el) => userStore.userFilter.includes(el.originStops))
+})
+
+const isAciveAllFilter = computed(() => {
+  return (
+    userStore.userFilter &&
+    userStore.userFilter.length &&
+    userStore.userFilter.length === 1 &&
+    userStore.userFilter[0] === checkboxIdAll.value
+  )
+})
+
+const filterByPrice = computed(() => {
+  return [...filteredByStops.value].sort((a, b) => a.price - b.price)
+})
+
+const filterByDuration = computed(() => {
+  return [...filteredByStops.value].sort((a, b) => a.durationFly - b.durationFly)
+})
+
+const filterByOptim = computed(() => {
+  return [...filteredByStops.value].sort((a, b) => a.ratio - b.ratio)
+})
+
+const filterByTopNav = computed(() => {
+  if (stateFilter.value === 1) {
+    return filterByPrice.value
+  } else if (stateFilter.value === 2) {
+    return filterByDuration.value
+  } else if (stateFilter.value === 3) {
+    return filterByOptim.value
+  } else {
+    return filteredByStops.value
+  }
 })
 
 const disabledBtn = computed(() => {
@@ -35,7 +76,7 @@ const disabledBtn = computed(() => {
 })
 
 function handlebtnFilter(id) {
-  console.log(id, 'id')
+  limitCard.value = 5
   if (stateFilter.value === id) {
     stateFilter.value = 0
     return
@@ -45,8 +86,6 @@ function handlebtnFilter(id) {
 
 function showMoreCard() {
   limitCard.value += countList
-  console.log(limitCard.value)
-  console.log(disabledBtn.value, 'disabledBtn')
 }
 </script>
 

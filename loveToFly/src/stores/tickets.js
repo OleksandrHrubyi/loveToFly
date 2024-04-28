@@ -2,10 +2,11 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
 
-export const useTickerStore = defineStore('tickerStore', () => {
+export const useTicketsStore = defineStore('ticketsStore', () => {
   const ticketsList = ref([])
   let idSearch = ref(null)
   let dispatchStatus = ref(false)
+  let userFilter = ref([5])
 
   async function getIdSearch() {
     try {
@@ -37,6 +38,14 @@ export const useTickerStore = defineStore('tickerStore', () => {
       if (data && data.tickets) {
         const newTickets = data.tickets.map((el) => {
           el.keyId = uuidv4()
+          el.originStops = el.segments?.[0]?.stops?.length || 0
+          el.departureStops = el.segments?.[1]?.stops?.length || 0
+          if (el.segments && el.segments.length > 1) {
+            el.durationFly = (el.segments[0].duration || 0) + (el.segments[1].duration || 0)
+          } else {
+            el.durationFly = 0
+          }
+          el.ratio = el.durationFly ? el.price / el.durationFly : 0
           return el
         })
         ticketsList.value = [...ticketsList.value, ...newTickets]
@@ -46,7 +55,7 @@ export const useTickerStore = defineStore('tickerStore', () => {
       }
       getListTickets()
     } catch (error) {
-      console.error('error getListTickets', error.errorMessage)
+      console.error('error getListTickets', error)
       setTimeout(() => {
         getListTickets()
       }, 2000)
@@ -55,5 +64,5 @@ export const useTickerStore = defineStore('tickerStore', () => {
     }
   }
 
-  return { idSearch, ticketsList, getIdSearch, getListTickets, dispatchStatus }
+  return { idSearch, ticketsList, getIdSearch, getListTickets, dispatchStatus, userFilter }
 })

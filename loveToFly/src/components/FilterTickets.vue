@@ -1,20 +1,34 @@
 <script setup>
 import { ref } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useTicketsStore } from '@/stores/tickets'
 import CheckBoxCustom from '@/components/CheckBoxCustom.vue'
 import { filtersData } from '@/constants/filtersData'
 
+const store = useTicketsStore()
+const { userFilter } = storeToRefs(store)
+
+const idAllcheckbox = 5
 let checkBoxValue = ref(false)
-let userFilter = ref([])
 
 function handleValueCheckBox(id) {
   checkBoxValue.value = !checkBoxValue.value
-
-  if (userFilter.value.includes(id)) {
-    userFilter.value = userFilter.value.filter((el) => el !== id)
-    return
+  const isInFilter = userFilter.value.includes(id)
+  if (id !== idAllcheckbox) {
+    if (isInFilter) {
+      userFilter.value = userFilter.value.filter((el) => el !== id)
+    } else {
+      userFilter.value.push(id)
+      userFilter.value = userFilter.value.filter((el) => el !== idAllcheckbox)
+    }
+  } else {
+    userFilter.value = [idAllcheckbox]
   }
 
-  userFilter.value.push(id)
+  if (!userFilter.value.length) {
+    userFilter.value.push(idAllcheckbox)
+  }
+  console.log(userFilter.value, 'value')
 }
 </script>
 
@@ -24,8 +38,8 @@ function handleValueCheckBox(id) {
     <ul class="filter-list">
       <li
         class="filter-item"
-        @click="handleValueCheckBox(item.id)"
         v-for="item in filtersData"
+        @click="handleValueCheckBox(item.id)"
         :key="item.id"
       >
         <div class="filter-wrap">
@@ -92,14 +106,13 @@ function handleValueCheckBox(id) {
 .filter-item {
   transition: all var(--transition-style);
   padding: 10px 20px;
-
+  cursor: pointer;
   @media screen and (max-width: $max-mobile-width) {
     padding: 8px;
   }
 
   @media screen and (min-width: $min-desktop-width) {
     &:hover {
-      cursor: pointer;
       background-color: var(--bi-color-neutral-2);
     }
   }
