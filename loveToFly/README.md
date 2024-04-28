@@ -2,10 +2,10 @@
 ## Vue3/Pinia
 
 ## тест Pixel Perfect
-![тест Pixel Perfect](loveToFly/src/assets/img/pixel.png "тест Pixel Perfect")
+![тест Pixel Perfect](src/assets/img/pixel.png "тест Pixel Perfect")
 
 ## тест Lighthouse
-![тест Lighthouse](loveToFly/src/assets/img/test.png "тест Lighthouse")
+![тест Lighthouse](src/assets/img/test.png "тест Lighthouse")
 
 ### опис:
 1. Після завантаження сторінки відображаються всі квитки, отримані від сервера.
