@@ -123,10 +123,10 @@ function showMoreCard() {
               :class="[
                 { 'active-btn-filter': stateFilter === item.id },
                 {
-                  'left-border':
+                  'active-line':
                     !stateFilter || (stateFilter === 1 && item.id === 3),
                 },
-                { 'right-border': stateFilter === 3 && item.id === 1 },
+                { 'active-br-line': stateFilter === 3 && item.id === 1 },
               ]"
             >
               {{ item.name }}
@@ -303,11 +303,11 @@ function showMoreCard() {
   border-bottom: 1px solid var(--bi-color-brand);
 }
 
-.left-border {
+.active-line {
   border-left: 1px solid var(--bi-color-border-2);
 }
 
-.right-border {
+.active-br-line {
   border-right: 1px solid var(--bi-color-border-2);
 }
 

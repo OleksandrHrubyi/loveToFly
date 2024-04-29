@@ -8,11 +8,11 @@ export const useTicketsStore = defineStore("ticketsStore", () => {
   const dispatchStatus = ref(false);
   const userFilter = ref([5]);
   const finishDispatch = ref(true);
-  const apiUtl = import.meta.env.VITE_API_URL;
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   async function getIdSearch() {
     try {
-      const response = await fetch(`${apiUtl}/search`);
+      const response = await fetch(`${apiUrl}/search`);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -32,7 +32,7 @@ export const useTicketsStore = defineStore("ticketsStore", () => {
       finishDispatch.value = true
       dispatchStatus.value = true
       const response = await fetch(
-        `https://avs-backend.vercel.app/tickets?searchId=${idSearch.value}`
+        `${apiUrl}/tickets?searchId=${idSearch.value}`
       )
       if (!response.ok) {
         throw new Error('getListTickets: Network response was not ok ')
