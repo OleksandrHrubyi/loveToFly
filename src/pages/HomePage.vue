@@ -21,7 +21,6 @@ onMounted(async () => {
 });
 
 const filteredTicker = computed(() => {
-  console.log(filterByTopNav.value.slice(0, limitCard.value));
   return filterByTopNav.value.slice(0, limitCard.value);
 });
 
